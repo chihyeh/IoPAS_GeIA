@@ -47,7 +47,7 @@ Impurities_Neutral_Concentration = 2*math.pow(10,15)
 # Three regions model #https://slideplayer.com/slide/4784387/
 def Desity_of_impurities(Temperature,I_C):
     array1 = array("f",[])
-    Charge_carrier_density = I_C * ( math.pow(2.718,0.01*((1/(2* KB*77)- (1/(2* KB*Temperature))) )))
+    Charge_carrier_density = I_C * ( math.pow(2.718,0.01*((1/(2* KB*120)- (1/(2* KB*Temperature))) )))
     if(Charge_carrier_density<=1):
         a = 1
     else:
