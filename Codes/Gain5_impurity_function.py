@@ -2,9 +2,9 @@
 import ROOT
 import os
 import math
-import Gain_Function
+import Gain4_Singal_threshold
 from ROOT import TFile, TH1F, gDirectory, TCanvas, TPad, TProfile,TGraph, TGraphAsymmErrors,TGraphErrors, TF1
-from ROOT import TH1D, TH1, TH1I, TH2Poly
+from ROOT import TH1D, TH1, TH1I, TH2Poly, TLine
 from ROOT import gStyle
 from ROOT import gROOT
 from ROOT import TStyle
@@ -156,17 +156,17 @@ yarray1=array("f",[])
 yarray2=array("f",[])
 yarray3=array("f",[])
 
-for i in range(1,1001):
-    xarray.append(np.log10(i))
-    yarray.append(np.log10(Raw_Singal_threshold(i,BKG_estimation(1*1*1,4,10))))
-    yarray1.append(np.log10(Raw_Singal_threshold(i,BKG_estimation(1*1*1,77,10))))
+for i in range(4,120):
+    xarray.append(1000/i)
+    yarray.append(Desity_of_impurities(i,math.pow(10,10))[0])
+    yarray1.append(Desity_of_impurities(i,math.pow(10,10))[0])
     xarrayerror.append(0)
     yarrayerror.append(0)
 c = TCanvas("c1", "c1",0,0,500,500)
 
 gStyle.SetOptFit()
-gr = TGraphErrors(1000,xarray,yarray,xarrayerror,yarrayerror)
-gr1 = TGraphErrors(1000,xarray,yarray1,xarrayerror,yarrayerror)
+gr = TGraphErrors(116,xarray,yarray,xarrayerror,yarrayerror)
+gr1 = TGraphErrors(116,xarray,yarray1,xarrayerror,yarrayerror)
 
 gr.SetLineStyle(1)
 gr.SetMarkerColor(2)
@@ -178,16 +178,16 @@ gr1.SetMarkerColor(3)
 gr1.SetMarkerStyle(8)
 gr1.SetLineWidth(2)
 
-gr.SetTitle(";Log(Gain) ;Log(Signal Threshold)[eV] ")
-gr.GetXaxis().SetRangeUser(0,3)
-gr.GetYaxis().SetRangeUser(-2,6)
+gr.SetTitle(";#frac{1000}{T}(#frac{1}{K}) ;Charge carrier density(cm^{-3}) ")
+gr.GetXaxis().SetRangeUser(0,300)
+gr.GetYaxis().SetRangeUser(0,math.pow(10,10))
 #gr.GetHistogram().SetMaximum(6)
 #gr.GetHistogram().SetMinimum(-2)
 #gr.GetXaxis().SetLimits(0,1000)
 gr.GetXaxis().CenterTitle()
 gr.GetYaxis().CenterTitle()
-gr.GetXaxis().SetTitleOffset(1)
-gr.GetYaxis().SetTitleOffset(1)
+#gr.GetXaxis().SetTitleOffset(1)
+#gr.GetYaxis().SetTitleOffset(1)
 
 #================================
 gr.GetYaxis().SetTitleSize(0.04)
@@ -206,14 +206,34 @@ leg1.SetTextSize(0.05)
 leg1.SetBorderSize(0)
 leg1.SetTextFont(22)
 leg1.AddEntry("","GeIA group","")
-leg1.AddEntry(gr,"4K","lp")
-leg1.AddEntry(gr1,"77K","lp")
+leg1.AddEntry("","#propto e^{-#frac{E}{2k_{B}T}}","")
+
+
+line_120K =TLine(1000/120-2,0,1000/120+2,Desity_of_impurities(120,math.pow(10,10))[0])
+line_77K =TLine(1000/77-2,0,1000/77+2,Desity_of_impurities(77,math.pow(10,10))[0])
+line_4K =TLine(1000/4-2,0,1000/4+2,Desity_of_impurities(4,math.pow(10,10))[0])
+line_120K.SetLineWidth(2)
+line_77K.SetLineWidth(2)
+line_4K.SetLineWidth(2)
+
+
+
+t =  TLatex(1000/120,Desity_of_impurities(120,math.pow(10,10))[0],"120K:10^{10}(cm^{-3})");
+t1 =  TLatex(1000/77,Desity_of_impurities(77,math.pow(10,10))[0]/10,"77K:"+str(round(Desity_of_impurities(77,math.pow(10,10))[0]/math.pow(10,9),1))+"#times 10^{9}(cm^{-3})")
+t2 =  TLatex(1000/4-75,Desity_of_impurities(4,math.pow(10,10))[0],"4K:"+str(round(Desity_of_impurities(4,math.pow(10,10))[0]/math.pow(10,3),1))+"#times 10^{3}(cm^{-3})")
 
 c.Draw()
 gr.Draw("ALP")
-gr1.Draw("LPsame")
 leg1.Draw()
-c.Print("Singal_threshold.pdf")
+line_120K.Draw("same")
+line_77K.Draw("same")
+line_4K.Draw("same")
+t.Draw("same")
+t1.Draw("same")
+t2.Draw("same")
+
+c.SetLogy()
+c.Print("Impurity_concentration.pdf")
 
 
 
