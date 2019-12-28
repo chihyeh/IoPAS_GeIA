@@ -47,7 +47,22 @@ Impurities_Neutral_Concentration = 2*math.pow(10,15)
 # Three regions model #https://slideplayer.com/slide/4784387/
 def Desity_of_impurities(Temperature,I_C):
     array1 = array("f",[])
-    Charge_carrier_density = I_C * ( math.pow(2.718,0.0106*((1/(2*KB*120)- (1/(2*KB*Temperature))) )))
+    Charge_impurity_temperture_modified = I_C * math.pow(2.718,0.0106*((1/(2*KB*120)- (1/(2*KB*Temperature))) ))
+    Factor_density_original = np.log10(Charge_impurity_temperture_modified)
+    #===========================
+    if(Temperature==77):#Depletion
+        print 'Temperature: '+ str(Temperature)
+        Factor_density=Factor_density_original/2
+    if(Temperature==4):#Non-Depletion
+        print 'Temperature: '+ str(Temperature)
+        Factor_density=Factor_density_original
+    #===========================
+    print 'Factor_density: '+str(Factor_density_original)
+    print 'Factor_density_1: '+str(Factor_density)
+
+    Charge_carrier_density = ( math.pow(10, Factor_density))
+    print 'Charge_carrier_density: '+str(Charge_carrier_density)
+
     if(Charge_carrier_density<=1):
         a = 1
     else:
@@ -60,15 +75,13 @@ def Desity_of_impurities(Temperature,I_C):
 #################################
 def Raw_Singal_threshold(G,Nb,T):
 # Formula Ns > ( 3 ((Nb*G)^(1/2)) /G )
-    if(T==4): Expand=(0.75/3.5)
-    if(T==77): Expand=(0.75/3)
 
-    Ns = 3 * (math.pow( (Nb*Expand)/G , 0.5))
+    Ns = 3*(math.pow( (Nb)/G , 0.5))
     if(G==1):
-        print 'G==1: '+str(Ns*3)
+        print 'G==1: '+str(Ns)
         
 
-    return Ns*3*Expand
+    return 3*Ns
 
 def BKG_estimation(Volume,T,Charged_impurites):
     return (0.1*Volume*Desity_of_impurities(T,math.pow(10,Charged_impurites))[0])/(100) # #number/(cm^3*(mu*s))
@@ -185,36 +198,36 @@ yarray_77K_3_gr = TGraphErrors(1000,xarray,yarray_77K_3,xarrayerror,yarrayerror)
 yarray_4K_1_gr.SetLineStyle(1)
 yarray_4K_1_gr.SetMarkerColor(2)
 yarray_4K_1_gr.SetMarkerStyle(8)
-yarray_4K_1_gr.SetLineWidth(2)
+yarray_4K_1_gr.SetLineWidth(1)
 
 yarray_4K_2_gr.SetLineStyle(1)
 yarray_4K_2_gr.SetMarkerColor(3)
 yarray_4K_2_gr.SetMarkerStyle(8)
-yarray_4K_2_gr.SetLineWidth(2)
+yarray_4K_2_gr.SetLineWidth(1)
 
 yarray_4K_3_gr.SetLineStyle(1)
 yarray_4K_3_gr.SetMarkerColor(4)
 yarray_4K_3_gr.SetMarkerStyle(8)
-yarray_4K_3_gr.SetLineWidth(2)
+yarray_4K_3_gr.SetLineWidth(1)
 
 yarray_77K_1_gr.SetLineStyle(1)
 yarray_77K_1_gr.SetMarkerColor(5)
 yarray_77K_1_gr.SetMarkerStyle(8)
-yarray_77K_1_gr.SetLineWidth(2)
+yarray_77K_1_gr.SetLineWidth(1)
 
 yarray_77K_2_gr.SetLineStyle(1)
 yarray_77K_2_gr.SetMarkerColor(6)
 yarray_77K_2_gr.SetMarkerStyle(8)
-yarray_77K_2_gr.SetLineWidth(2)
+yarray_77K_2_gr.SetLineWidth(1)
 
 yarray_77K_3_gr.SetLineStyle(1)
 yarray_77K_3_gr.SetMarkerColor(7)
 yarray_77K_3_gr.SetMarkerStyle(8)
-yarray_77K_3_gr.SetLineWidth(2)
+yarray_77K_3_gr.SetLineWidth(1)
 
 yarray_4K_1_gr.SetTitle(";Log(Gain) ;Log(Signal Threshold)[eV] ")
 yarray_4K_1_gr.GetXaxis().SetRangeUser(0,3)
-yarray_4K_1_gr.GetYaxis().SetRangeUser(-2,8)
+yarray_4K_1_gr.GetYaxis().SetRangeUser(-1,3)
 #gr.GetHistogram().SetMaximum(6)
 #gr.GetHistogram().SetMinimum(-2)
 #gr.GetXaxis().SetLimits(0,1000)
@@ -233,7 +246,7 @@ yarray_4K_1_gr.GetYaxis().SetLabelFont(22)
 yarray_4K_1_gr.GetXaxis().SetTitleColor(1)
 yarray_4K_1_gr.GetYaxis().SetTitleColor(1)
 
-leg1=TLegend(0.4,0.6,0.6,0.9)
+leg1=TLegend(0.5,0.6,0.7,0.9)
 leg1.SetFillColor(0)
 leg1.SetFillStyle(0)
 leg1.SetTextSize(0.05)
